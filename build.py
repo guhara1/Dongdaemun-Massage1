@@ -16,8 +16,11 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
+from datetime import date
+
 from content import PAGES
-from content.site import (BASE_URL, BRAND, NAV, PHONE, PHONE_DISPLAY, MAIN_URL)
+from content.site import (BASE_URL, BRAND, BRAND_DESC, NAV, PHONE,
+                          PHONE_DISPLAY, MAIN_URL, INDEXNOW_KEY)
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 MIN_INDEX_CHARS = 2000
@@ -144,6 +147,7 @@ def render_page(page: dict) -> str:
 <meta name="description" content="{desc}">
 {robots}
 <link rel="canonical" href="{canonical}">
+<link rel="alternate" type="application/rss+xml" title="{BRAND}" href="{BASE_URL.rstrip('/')}/rss.xml">
 <meta property="og:type" content="website">
 <meta property="og:title" content="{title}">
 <meta property="og:description" content="{desc}">
@@ -259,9 +263,15 @@ def render_page(page: dict) -> str:
 """
 
 
+def esc(s: str) -> str:
+    """RSS/XML 텍스트용 이스케이프."""
+    return html.escape(s, quote=False)
+
+
 def build() -> None:
     report = []
     sitemap_urls = []
+    index_pages = []  # (loc, title, desc) — sitemap·rss 공용
 
     for page in PAGES:
         path = page["path"]  # "seoul/dongdaemun/sinseol-dong-chuljangmassage/" 형태
@@ -274,12 +284,20 @@ def build() -> None:
         chars = text_length(page["body"])
         noindex = page.get("noindex", False) or chars < MIN_INDEX_CHARS
         if not noindex:
-            sitemap_urls.append(BASE_URL.rstrip("/") + "/" + path)
+            loc = BASE_URL.rstrip("/") + "/" + path
+            sitemap_urls.append(loc)
+            index_pages.append((loc, page["title"], page["desc"]))
         report.append((path or "/", chars, "noindex" if noindex else "index"))
 
-    # sitemap.xml
+    base = BASE_URL.rstrip("/")
+    today = date.today().isoformat()
+
+    # sitemap.xml — lastmod 포함
     urls = "\n".join(
-        f"  <url><loc>{u}</loc></url>" for u in sitemap_urls
+        f"  <url><loc>{u}</loc><lastmod>{today}</lastmod>"
+        f"<changefreq>weekly</changefreq>"
+        f"<priority>{'1.0' if u == base + '/' else '0.8'}</priority></url>"
+        for u in sitemap_urls
     )
     with open(os.path.join(ROOT, "sitemap.xml"), "w", encoding="utf-8") as f:
         f.write(
@@ -288,12 +306,49 @@ def build() -> None:
             f"{urls}\n</urlset>\n"
         )
 
-    # robots.txt
+    # rss.xml — 색인 대상 페이지 피드 (빙·네이버·구글 발견 보조)
+    now_rfc = date.today().strftime("%a, %d %b %Y 00:00:00 +0900")
+    items = "\n".join(
+        "  <item>"
+        f"<title>{esc(title)}</title>"
+        f"<link>{loc}</link>"
+        f"<guid isPermaLink=\"true\">{loc}</guid>"
+        f"<description>{esc(desc)}</description>"
+        f"<pubDate>{now_rfc}</pubDate>"
+        "</item>"
+        for loc, title, desc in index_pages
+    )
+    with open(os.path.join(ROOT, "rss.xml"), "w", encoding="utf-8") as f:
+        f.write(
+            '<?xml version="1.0" encoding="UTF-8"?>\n'
+            '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">\n'
+            "<channel>\n"
+            f"  <title>{esc(BRAND)}</title>\n"
+            f"  <link>{base}/</link>\n"
+            f'  <atom:link href="{base}/rss.xml" rel="self" type="application/rss+xml" />\n'
+            f"  <description>{esc(BRAND_DESC)}</description>\n"
+            "  <language>ko-KR</language>\n"
+            f"  <lastBuildDate>{now_rfc}</lastBuildDate>\n"
+            f"{items}\n"
+            "</channel>\n</rss>\n"
+        )
+
+    # robots.txt — 주요 봇 명시 허용 + sitemap
     with open(os.path.join(ROOT, "robots.txt"), "w", encoding="utf-8") as f:
         f.write(
-            "User-agent: *\nAllow: /\n\n"
-            f"Sitemap: {BASE_URL.rstrip('/')}/sitemap.xml\n"
+            "User-agent: *\n"
+            "Allow: /\n\n"
+            "# 검색엔진 크롤러 명시 허용\n"
+            "User-agent: Googlebot\nAllow: /\n\n"
+            "User-agent: Yeti\nAllow: /\n\n"          # Naver
+            "User-agent: bingbot\nAllow: /\n\n"
+            "User-agent: Daumoa\nAllow: /\n\n"        # Daum/Kakao
+            f"Sitemap: {base}/sitemap.xml\n"
         )
+
+    # IndexNow 키 파일 — https://도메인/<KEY>.txt 에서 키를 검증한다
+    with open(os.path.join(ROOT, f"{INDEXNOW_KEY}.txt"), "w", encoding="utf-8") as f:
+        f.write(INDEXNOW_KEY + "\n")
 
     # .nojekyll (GitHub Pages)
     open(os.path.join(ROOT, ".nojekyll"), "w").close()

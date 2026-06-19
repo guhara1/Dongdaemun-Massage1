@@ -3,8 +3,13 @@
 BASE_URL = "https://dongdaemun-massage1.pages.dev"
 
 BRAND = "바로GO"
+BRAND_DESC = "서울 동대문구 전지역 방문형 출장마사지·홈타이 예약 안내"
 PHONE = "0508-202-4719"
 PHONE_DISPLAY = "0508-202-4719"
+
+# IndexNow 키 — 빌드 시 루트에 <KEY>.txt 키파일이 자동 생성된다.
+# (Bing·Naver·Yandex 등 IndexNow 참여 검색엔진에 즉시 색인 통보용)
+INDEXNOW_KEY = "2eb079a18f2c1ced5eacd236ba79dc06"
 
 # 메인(허브) 페이지 — 루트(/)에서 바로 노출한다.
 MAIN_PATH = ""
