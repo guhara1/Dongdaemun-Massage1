@@ -6,7 +6,10 @@ _CANON = BASE_URL.rstrip("/") + MAIN_URL
 
 # 실제 오프라인 사업장 주소가 없는 방문형 사이트이므로 LocalBusiness 대신
 # Organization / WebPage / BreadcrumbList / ImageObject / FAQPage 만 사용한다.
-_JSONLD = f"""<script type="application/ld+json">
+# 네이버 서치어드바이저 사이트 소유확인 메타태그(메인페이지)
+_NAVER_VERIFY = '<meta name="naver-site-verification" content="b0db2f6d17601f7def4db473a82e9bd7bd9b8be2" />\n'
+
+_JSONLD = _NAVER_VERIFY + f"""<script type="application/ld+json">
 {{
   "@context": "https://schema.org",
   "@type": "Organization",
