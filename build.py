@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""노원 블랙 마사지 — 정적 사이트 빌드 스크립트.
+"""바로GO 동대문구 출장마사지·홈타이 — 정적 사이트 빌드 스크립트.
 
 content/ 패키지의 페이지 정의를 읽어 정적 HTML을 생성한다.
 
@@ -255,7 +255,7 @@ def build() -> None:
     sitemap_urls = []
 
     for page in PAGES:
-        path = page["path"]  # "" 또는 "nowon-gu/wolgye-dong/" 형태
+        path = page["path"]  # "seoul/dongdaemun/sinseol-dong-chuljangmassage/" 형태
         out_dir = os.path.join(ROOT, path)
         os.makedirs(out_dir, exist_ok=True)
         html_out = render_page(page)
