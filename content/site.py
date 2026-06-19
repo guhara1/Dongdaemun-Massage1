@@ -6,9 +6,9 @@ BRAND = "바로GO"
 PHONE = "0508-202-4719"
 PHONE_DISPLAY = "0508-202-4719"
 
-# 메인(허브) 페이지 URL — 서울 지역 폴더 구조 안의 동대문구 대표 페이지
-MAIN_PATH = "seoul/dongdaemun-gu-chuljangmassage/"
-MAIN_URL = "/" + MAIN_PATH
+# 메인(허브) 페이지 — 루트(/)에서 바로 노출한다.
+MAIN_PATH = ""
+MAIN_URL = "/"
 
 # 상단 메뉴 — 하위 메뉴에는 키워드를 반복하지 않고 지역명·역명만 표시한다.
 NAV = [

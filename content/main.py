@@ -45,16 +45,6 @@ _JSONLD = f"""<script type="application/ld+json">
 <script type="application/ld+json">
 {{
   "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  "itemListElement": [
-    {{ "@type": "ListItem", "position": 1, "name": "홈", "item": "{BASE_URL.rstrip('/')}/" }},
-    {{ "@type": "ListItem", "position": 2, "name": "동대문구 출장마사지", "item": "{_CANON}" }}
-  ]
-}}
-</script>
-<script type="application/ld+json">
-{{
-  "@context": "https://schema.org",
   "@type": "FAQPage",
   "mainEntity": [
     {{
