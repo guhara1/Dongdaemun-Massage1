@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://www.dongdaemun-barogo.example.com/sitemap.xml
