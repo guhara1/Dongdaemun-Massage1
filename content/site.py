@@ -1,11 +1,14 @@
 # 사이트 공통 설정
-# 배포 도메인 확정 후 BASE_URL 을 실제 도메인으로 변경하세요.
-BASE_URL = "https://dongdaemun-massage1.pages.dev"
+# 배포 도메인 — Netlify 운영 도메인.
+BASE_URL = "https://dongdaemun-massage1.netlify.app"
 
 BRAND = "바로GO"
 BRAND_DESC = "서울 동대문구 전지역 방문형 출장마사지·홈타이 예약 안내"
 PHONE = "0508-202-4719"
 PHONE_DISPLAY = "0508-202-4719"
+
+# 네이버 서치어드바이저 사이트 소유확인 토큰(메인페이지 메타태그용)
+NAVER_VERIFY = "b38a8eb3026bfa5eb9effddf7cdbae32a5d25af2"
 
 # IndexNow 키 — 빌드 시 루트에 <KEY>.txt 키파일이 자동 생성된다.
 # (Bing·Naver·Yandex 등 IndexNow 참여 검색엔진에 즉시 색인 통보용)

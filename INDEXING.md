@@ -18,23 +18,23 @@
 > 키를 바꾸려면 `content/site.py`의 `INDEXNOW_KEY`만 수정 후 재빌드하면 키파일도 자동 갱신됩니다.
 
 배포 후 확인:
-- `https://dongdaemun-massage1.pages.dev/sitemap.xml`
-- `https://dongdaemun-massage1.pages.dev/rss.xml`
-- `https://dongdaemun-massage1.pages.dev/robots.txt`
-- `https://dongdaemun-massage1.pages.dev/2eb079a18f2c1ced5eacd236ba79dc06.txt` ← 키 한 줄만 보이면 정상
+- `https://dongdaemun-massage1.netlify.app/sitemap.xml`
+- `https://dongdaemun-massage1.netlify.app/rss.xml`
+- `https://dongdaemun-massage1.netlify.app/robots.txt`
+- `https://dongdaemun-massage1.netlify.app/2eb079a18f2c1ced5eacd236ba79dc06.txt` ← 키 한 줄만 보이면 정상
 
 ---
 
 ## 2. 검색엔진 등록 (최초 1회)
 
 ### 네이버 서치어드바이저 (https://searchadvisor.naver.com)
-1. 사이트 등록 → `https://dongdaemun-massage1.pages.dev/`
+1. 사이트 등록 → `https://dongdaemun-massage1.netlify.app/`
 2. 소유확인: 메인페이지에 이미 메타태그가 들어가 있습니다(`naver-site-verification`) → **확인** 클릭
 3. 요청 → **사이트맵 제출**: `sitemap.xml`
 4. 요청 → **RSS 제출**: `rss.xml`
 
 ### 구글 서치 콘솔 (https://search.google.com/search-console)
-1. 속성 추가 → URL 접두어 `https://dongdaemun-massage1.pages.dev/`
+1. 속성 추가 → URL 접두어 `https://dongdaemun-massage1.netlify.app/`
 2. 소유확인(HTML 태그 또는 DNS) — 필요 시 메타태그를 추가로 넣어드릴 수 있습니다
 3. Sitemaps → `sitemap.xml` 제출
 4. URL 검사 → 주요 페이지 **색인 생성 요청**
@@ -54,7 +54,7 @@
 python3 tools/indexnow.py
 
 # 글/페이지를 새로 올렸을 때 — 해당 URL만
-python3 tools/indexnow.py https://dongdaemun-massage1.pages.dev/새-경로/
+python3 tools/indexnow.py https://dongdaemun-massage1.netlify.app/새-경로/
 ```
 
 전제: **키파일이 실제 도메인에 배포(공개)된 뒤** 실행해야 검증됩니다.
@@ -91,8 +91,8 @@ python3 build.py
 git add -A && git commit -m "새 페이지" && git push   # → 배포
 
 # 2) 배포 완료 확인 후 즉시 통보
-python3 tools/indexnow.py https://dongdaemun-massage1.pages.dev/새-경로/     # 빙·네이버
-python3 tools/google_indexing.py https://dongdaemun-massage1.pages.dev/새-경로/   # 구글(선택)
+python3 tools/indexnow.py https://dongdaemun-massage1.netlify.app/새-경로/     # 빙·네이버
+python3 tools/google_indexing.py https://dongdaemun-massage1.netlify.app/새-경로/   # 구글(선택)
 ```
 
 ---

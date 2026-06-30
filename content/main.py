@@ -1,83 +1,12 @@
 # 메인 페이지 — 동대문구 출장마사지·홈타이 허브. 키워드를 몰아넣지 않고 상세 페이지로 연결한다.
-from .site import BASE_URL, BRAND, PHONE, PHONE_DISPLAY, MAIN_PATH, MAIN_URL
+from .site import BASE_URL, BRAND, PHONE, PHONE_DISPLAY, MAIN_PATH, MAIN_URL, NAVER_VERIFY
 from .pricing import PRICING
 
 _CANON = BASE_URL.rstrip("/") + MAIN_URL
 
-# 실제 오프라인 사업장 주소가 없는 방문형 사이트이므로 LocalBusiness 대신
-# Organization / WebPage / BreadcrumbList / ImageObject / FAQPage 만 사용한다.
-# 네이버 서치어드바이저 사이트 소유확인 메타태그(메인페이지)
-_NAVER_VERIFY = '<meta name="naver-site-verification" content="b0db2f6d17601f7def4db473a82e9bd7bd9b8be2" />\n'
-
-_JSONLD = _NAVER_VERIFY + f"""<script type="application/ld+json">
-{{
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  "name": "{BRAND}",
-  "url": "{_CANON}",
-  "telephone": "{PHONE}",
-  "logo": {{
-    "@type": "ImageObject",
-    "url": "{BASE_URL.rstrip('/')}/assets/og-image.png",
-    "width": 1200,
-    "height": 630
-  }},
-  "areaServed": {{
-    "@type": "AdministrativeArea",
-    "name": "서울특별시 동대문구"
-  }}
-}}
-</script>
-<script type="application/ld+json">
-{{
-  "@context": "https://schema.org",
-  "@type": "WebPage",
-  "name": "동대문구 출장마사지·동대문구 홈타이 지역별 예약 안내",
-  "url": "{_CANON}",
-  "description": "동대문구 출장마사지·홈타이 예약 전 청량리, 회기, 장안동, 답십리 생활권을 확인하세요.",
-  "primaryImageOfPage": {{
-    "@type": "ImageObject",
-    "url": "{BASE_URL.rstrip('/')}/assets/og-image.png",
-    "width": 1200,
-    "height": 630
-  }},
-  "inLanguage": "ko-KR",
-  "isPartOf": {{ "@type": "WebSite", "name": "{BRAND}", "url": "{BASE_URL.rstrip('/')}/" }}
-}}
-</script>
-<script type="application/ld+json">
-{{
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  "mainEntity": [
-    {{
-      "@type": "Question",
-      "name": "동대문구 전지역 방문이 가능한가요?",
-      "acceptedAnswer": {{
-        "@type": "Answer",
-        "text": "예약 시간, 정확한 위치, 배정 상황에 따라 가능 여부가 달라집니다. 지역별 안내에서 신설동, 용두동, 제기동, 전농동, 답십리동, 장안동, 청량리동, 회기동, 휘경동, 이문동 기준으로 확인할 수 있습니다."
-      }}
-    }},
-    {{
-      "@type": "Question",
-      "name": "전농1동·전농2동은 왜 따로 없나요?",
-      "acceptedAnswer": {{
-        "@type": "Answer",
-        "text": "전농1동·전농2동, 답십리1·2동, 장안1·2동, 휘경1·2동, 이문1·2동처럼 번호로 나뉜 행정동은 각 대표 동 페이지에서 세부 생활권으로 통합 안내하여 중복 페이지 위험을 줄입니다."
-      }}
-    }},
-    {{
-      "@type": "Question",
-      "name": "동대문역도 동대문구 역세권으로 안내하나요?",
-      "acceptedAnswer": {{
-        "@type": "Answer",
-        "text": "동대문역과 동대문역사문화공원역은 이름과 달리 종로·중구 도심 생활권 성격이 강해 동대문구 핵심 역세권으로 다루지 않습니다. 동대문구 역세권은 청량리역, 회기역, 신설동역, 장한평역을 중심으로 안내합니다."
-      }}
-    }}
-  ]
-}}
-</script>
-"""
+# 구조화 데이터(Organization·WebPage·FAQPage 등)는 build.py 가 전 페이지에 자동
+# 주입한다. 메인 페이지에는 네이버 서치어드바이저 소유확인 메타태그만 추가한다.
+_JSONLD = f'<meta name="naver-site-verification" content="{NAVER_VERIFY}" />\n'
 
 _HERO = f"""<section class="hero">
   <div class="hero-inner">
@@ -158,6 +87,15 @@ _BODY = f"""
 <section id="howto">
 <h2>동대문구 출장마사지 사이트 이용 방법</h2>
 <p>거주하거나 머무시는 동이 분명하면 대표동 페이지를, 역 기준 위치가 익숙하면 역세권 페이지를, 상권·대학가·주거지 같은 생활권 기준이 편하면 생활권 페이지를 보시면 됩니다. 어느 페이지를 보셔도 예약 절차와 비용 기준은 동일하며, 최종 안내는 언제나 정확한 주소를 기준으로 이루어집니다. 메인 페이지는 동대문구 전체 구조를 안내하는 허브 역할을 하고, 세부 정보는 각 상세 페이지에서 고유하게 설명합니다.</p>
+</section>
+
+<section id="faq">
+<h2>동대문구 출장마사지·홈타이 자주 묻는 질문</h2>
+<div class="faq-item"><h3>동대문구 전지역 방문이 가능한가요?</h3><p>예약 시간, 정확한 위치, 배정 상황에 따라 가능 여부가 달라집니다. 지역별 안내에서 신설동, 용두동, 제기동, 전농동, 답십리동, 장안동, 청량리동, 회기동, 휘경동, 이문동 기준으로 확인할 수 있습니다.</p></div>
+<div class="faq-item"><h3>전농1동·전농2동은 왜 따로 없나요?</h3><p>전농1동·전농2동, 답십리1·2동, 장안1·2동, 휘경1·2동, 이문1·2동처럼 번호로 나뉜 행정동은 각 대표 동 페이지에서 세부 생활권으로 통합 안내하여 중복 페이지 위험을 줄입니다.</p></div>
+<div class="faq-item"><h3>동대문역도 동대문구 역세권으로 안내하나요?</h3><p>동대문역과 동대문역사문화공원역은 이름과 달리 종로·중구 도심 생활권 성격이 강해 동대문구 핵심 역세권으로 다루지 않습니다. 동대문구 역세권은 청량리역, 회기역, 신설동역, 장한평역을 중심으로 안내합니다.</p></div>
+<div class="faq-item"><h3>출장마사지와 홈타이는 어떻게 다른가요?</h3><p>출장마사지는 관리사가 계신 곳으로 방문하는 서비스 전체를, 홈타이는 그중 집에서 받는 타이마사지 형태를 가리킵니다. 자세한 내용은 <a href="/hometai-guide/#diff">홈타이 이용 가이드</a>에서 확인하실 수 있습니다.</p></div>
+<div class="faq-item"><h3>요금은 어떻게 되나요?</h3><p>60분 90,000원, 90분 150,000원, 120분 180,000원의 코스별 기본 요금으로 안내하며, 지역·시간대·이동 거리에 따른 추가 이동비는 예약 시 미리 알려드립니다.</p></div>
 </section>
 
 {PRICING}

@@ -14,4 +14,4 @@ Allow: /
 User-agent: Daumoa
 Allow: /
 
-Sitemap: https://dongdaemun-massage1.pages.dev/sitemap.xml
+Sitemap: https://dongdaemun-massage1.netlify.app/sitemap.xml
