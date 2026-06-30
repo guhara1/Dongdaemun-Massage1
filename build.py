@@ -18,12 +18,55 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from datetime import date
 
-from content import PAGES
+from content import PAGES, schema
 from content.site import (BASE_URL, BRAND, BRAND_DESC, NAV, PHONE,
-                          PHONE_DISPLAY, MAIN_URL, INDEXNOW_KEY)
+                          PHONE_DISPLAY, MAIN_PATH, MAIN_URL, INDEXNOW_KEY)
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 MIN_INDEX_CHARS = 2000
+
+# 내부링크 강화 — 롱테일 앵커텍스트로 허브·안내 페이지를 상호 연결한다.
+# 지역 상세(대표동·역·생활권) 페이지용 세트와 안내 페이지용 세트로 나눈다.
+RELATED_LOCATION = [
+    ("/seoul/dongdaemun/areas/", "동대문구 대표동별 출장마사지·홈타이 안내"),
+    ("/seoul/dongdaemun/stations/", "청량리·회기·장한평 역세권 출장마사지 안내"),
+    ("/seoul/dongdaemun/districts/", "동대문구 생활권별 방문 관리 안내"),
+    ("/reservation/", "출장마사지 예약 방법·가능 시간·이동비 안내"),
+    ("/hometai-guide/", "홈타이 처음 이용 가이드와 코스 선택 기준"),
+    ("/precautions/", "방문 전 주소·출입·개인정보 확인사항"),
+]
+RELATED_INFO = [
+    ("/seoul/dongdaemun/areas/", "동대문구 대표동별 출장마사지·홈타이 안내"),
+    ("/seoul/dongdaemun/stations/", "동대문구 주요 역세권 출장마사지 안내"),
+    ("/seoul/dongdaemun/districts/", "동대문구 생활권별 방문 관리 안내"),
+    ("/reservation/", "예약 방법과 가능 시간·결제 기준 안내"),
+    ("/hometai-guide/", "홈타이와 출장마사지 차이·이용 가이드"),
+    ("/support/", "자주 묻는 질문과 고객센터 안내"),
+]
+
+
+def render_related(path: str) -> str:
+    """페이지 하단 내부링크 블록(관련 안내). 자기 자신은 제외한다."""
+    table = RELATED_LOCATION if path.startswith("seoul/dongdaemun/") else RELATED_INFO
+    self_href = "/" + path
+    items = [(h, t) for h, t in table if h != self_href][:6]
+    links = "".join(
+        f'<li><a href="{h}">{t}</a></li>' for h, t in items
+    )
+    return (
+        '<nav class="related-links" aria-label="관련 안내">'
+        '<p class="related-title">이런 페이지도 함께 보세요</p>'
+        f'<ul class="related-grid">{links}</ul></nav>'
+    )
+
+
+def insert_related(body: str, related: str) -> str:
+    """요금·CTA 블록 바로 앞에 관련 링크 블록을 끼워 넣는다."""
+    for marker in ('<section class="pricing">', '<section class="cta">'):
+        idx = body.find(marker)
+        if idx != -1:
+            return body[:idx] + related + body[idx:]
+    return body + related
 
 
 def text_length(body_html: str) -> int:
@@ -126,6 +169,14 @@ def render_page(page: dict) -> str:
     )
     canonical = BASE_URL.rstrip("/") + "/" + path
 
+    # 구조화 데이터(JSON-LD) — 전 페이지 자동 주입.
+    is_main = path == MAIN_PATH
+    schema_html = schema.build_jsonld(page, canonical, is_main)
+
+    # 내부링크 강화 블록 — 색인 대상 페이지에만 넣는다.
+    if not noindex:
+        body = insert_related(body, render_related(path))
+
     # 히어로가 있는 페이지(메인)는 H1을 히어로 안에서 출력한다.
     if hero:
         page_head = hero
@@ -168,7 +219,7 @@ def render_page(page: dict) -> str:
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/style.css">
-{extra_head}</head>
+{schema_html}{extra_head}</head>
 <body>
 <header class="site-header">
   <div class="header-accent" aria-hidden="true"></div>
